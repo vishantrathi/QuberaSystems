@@ -56,7 +56,7 @@
       height: auto;
       margin-bottom: 25px;
       position: static;
-      z-index: 1; /* Ensure logo is above other elements */
+      z-index: 1;
     }
 
     .hero h1 {
@@ -182,8 +182,8 @@
       scroll-snap-align: start;
       font-style: italic;
       color: #333;
-      position: relative; /* or keep your existing */
-      z-index: 1; /* lower than iframe popup */
+      position: relative;
+      z-index: 1;
     }
 
     body.dark-mode .testimonial-list blockquote {
@@ -298,7 +298,7 @@
     .iframe-popup.active {
       opacity: 1;
       pointer-events: auto;
-      z-index: 3000; /* Increased z-index to ensure it appears above testimonials */
+      z-index: 3000;
     }
 
     .iframe-popup iframe {
@@ -307,7 +307,6 @@
       border: none;
     }
 
-    /* Dark mode styling */
     body.dark-mode .iframe-popup {
       background: #222;
       border-color: #444;
@@ -320,10 +319,89 @@
       position: relative;
       z-index: 1;
     }
+
+    /* Responsive styles */
+    @media (max-width: 900px) {
+      main {
+        padding: 40px 10px;
+      }
+      .projects-list {
+        flex-direction: column;
+        max-width: 100%;
+      }
+      .iframe-popup {
+        position: static;
+        width: 100%;
+        max-width: 100%;
+        left: 0;
+        top: 0;
+        margin-top: 20px;
+        height: 250px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      main {
+        padding: 20px 5px;
+      }
+      .hero h1 {
+        font-size: 2.5rem;
+      }
+      .hero p {
+        font-size: 1.1rem;
+      }
+      .logo {
+        width: 90px;
+        margin-bottom: 15px;
+      }
+      .section-title {
+        font-size: 1.5rem;
+      }
+      .projects-list ul {
+        min-width: 0;
+      }
+      .projects-list {
+        flex-direction: column;
+        gap: 10px;
+      }
+      .iframe-popup {
+        height: 180px;
+        min-width: 0;
+      }
+      .testimonial-list {
+        gap: 10px;
+      }
+      .testimonial-list blockquote {
+        flex: 0 0 220px;
+        padding: 12px;
+        font-size: 0.95rem;
+      }
+      #darkModeToggle {
+        font-size: 1rem;
+        padding: 6px 10px;
+        top: 10px;
+        right: 10px;
+      }
+      #cursor {
+        display: none;
+      }
+    }
+
+    @media (max-width: 400px) {
+      .hero h1 {
+        font-size: 1.5rem;
+      }
+      .section-title {
+        font-size: 1.1rem;
+      }
+      .iframe-popup {
+        height: 110px;
+      }
+    }
   </style>
 </head>
 <body>
-  <button id="darkModeToggle" aria-label="Toggle Dark Mode">🌙 Dark Mode</button>
+  <button id="darkModeToggle" aria-label="Toggle dark mode">🌙 Dark Mode</button>
   <section><img src="logo.png" alt="Qubera Systems Logo" class="logo" /></section>
 
   <main>
@@ -347,15 +425,14 @@
       </ul>
     </section>
 
-    <section class="projects" data-aos="fade-up">
+    <section class="projects" data-aos="fade-up"></section>
       <h2 class="section-title">Projects</h2>
       <p>We build transformative digital products. Hover over a project to preview.</p>
 
       <div class="projects-list">
         <ul>
-          <li data-src="https://vishantrathi.github.io/CYBER/">EnreachSolution</li>
+          <li data-src="https://en-reach-solutions.vercel.app/">EnreachSolution</li>
           <li data-src="https://camouflex.in/">CamouFlex</li>
-           <li data-src="https://harshitsinghdev.github.io/portfolio/">HarshitSingh's Portfolio</li>
         </ul>
 
         <div class="iframe-popup" id="iframePopup">
@@ -376,11 +453,6 @@
           <img src="./logo 3.png" alt="Client B Logo" class="client-logo" />
           <p>"Professional, timely, and creative. Highly recommend their services."</p>
           <footer>-CamouFlex</footer>
-        </blockquote>
-         <blockquote>
-          <img src="./image copy.png" alt="Client B Logo" class="client-logo" />
-          <p>"Building my portfolio with Qubera Systems was an incredible experience! In just one day, I had a fully functional and beautifully designed website showcasing my skills. The process was smooth, efficient, and incredibly affordable. The team understood my requirements and delivered beyond expectations. Highly recommend Qubera Systems for students looking for a quick, professional portfolio at a low cost!"</p>
-          <footer>-HarshitSingh</footer>
         </blockquote>
       </div>
     </section>
@@ -419,32 +491,34 @@
     // Custom cursor
     const cursor = document.getElementById('cursor');
     window.addEventListener('mousemove', e => {
-      cursor.style.left = e.clientX + 'px';
-      cursor.style.top = e.clientY + 'px';
+      if (window.innerWidth > 600) {
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top = e.clientY + 'px';
+      }
     });
 
-    // Dark mode toggle with persistence
+    // Dark mode toggle
     const toggleButton = document.getElementById('darkModeToggle');
-
     function setDarkMode(enabled) {
       if (enabled) {
         document.body.classList.add('dark-mode');
-        toggleButton.textContent = '☀️ Light Mode';
+        toggleButton.innerHTML = window.innerWidth <= 480 ? '☀️' : '☀️ Light Mode';
         localStorage.setItem('darkMode', 'enabled');
       } else {
         document.body.classList.remove('dark-mode');
-        toggleButton.textContent = '🌙 Dark Mode';
+        toggleButton.innerHTML = window.innerWidth <= 480 ? '🌙' : '🌙 Dark Mode';
         localStorage.setItem('darkMode', 'disabled');
       }
     }
-
-    // Load saved preference
+    window.addEventListener('resize', () => {
+      const isDarkMode = document.body.classList.contains('dark-mode');
+      setDarkMode(isDarkMode);
+    });
     if (localStorage.getItem('darkMode') === 'enabled') {
       setDarkMode(true);
     } else {
       setDarkMode(false);
     }
-
     toggleButton.addEventListener('click', () => {
       setDarkMode(!document.body.classList.contains('dark-mode'));
     });
@@ -477,22 +551,48 @@
       this.reset();
     });
 
+    // Projects preview
     const projectItems = document.querySelectorAll('.projects-list ul li');
     const iframePopup = document.getElementById('iframePopup');
     const iframe = iframePopup.querySelector('iframe');
 
-    projectItems.forEach(item => {
-      item.addEventListener('mouseenter', () => {
-        const src = item.getAttribute('data-src');
-        iframe.src = src;
-        iframePopup.classList.add('active');
-      });
+    // On mobile, show preview on click/tap; on desktop, show on hover
+    function showPreview(src) {
+      iframe.src = src;
+      iframePopup.classList.add('active');
+    }
+    function hidePreview() {
+      iframePopup.classList.remove('active');
+      iframe.src = '';
+    }
 
-      item.addEventListener('mouseleave', () => {
-        iframePopup.classList.remove('active');
-        iframe.src = ''; // stop loading when not hovered
-      });
-    });
+    function setupProjectEvents() {
+      if (window.innerWidth <= 900) {
+        projectItems.forEach(item => {
+          item.onmouseenter = null;
+          item.onmouseleave = null;
+          item.onclick = function() {
+            if (iframePopup.classList.contains('active') && iframe.src === this.getAttribute('data-src')) {
+              hidePreview();
+            } else {
+              showPreview(this.getAttribute('data-src'));
+            }
+          };
+        });
+      } else {
+        projectItems.forEach(item => {
+          item.onclick = null;
+          item.onmouseenter = function() {
+            showPreview(this.getAttribute('data-src'));
+          };
+          item.onmouseleave = function() {
+            hidePreview();
+          };
+        });
+      }
+    }
+    setupProjectEvents();
+    window.addEventListener('resize', setupProjectEvents);
   </script>
 </body>
 </html>
